@@ -1,0 +1,79 @@
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "YOUR_KEY",
+        authDomain: "YOUR_DOMAIN.firebaseapp.com",
+        databaseURL: "https://YOUR_ID-default-rtdb.firebaseio.com",  
+        projectId: "YOUR_ID",
+        storageBucket: "YOUR_ID.appspot.com",
+        messagingSenderId: "ID",
+        appId: "ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let map = null;
+    let markers = [];
+
+    function initMap() {
+        map = L.map("map").setView([20.5937, 78.9629], 5);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+    }
+
+    $(document).ready(() => {
+        initMap();
+        const dataRef = ref(db, 'airdata');
+
+        //  Realtime Listener (auto updates chart and map)
+        onValue(dataRef, (snapshot) => {
+            const raw = snapshot.val();
+            if (!raw) return;
+
+            const dataPoints = Object.values(raw);
+            updateChart(dataPoints);
+            updateMap(dataPoints);
+        });
+    });
+
+    let chart = null;
+
+    function updateChart(dataPoints) {
+        const labels = dataPoints.map(x => x.timestamp);
+        const values = dataPoints.map(x => x.air_quality);
+
+        if (chart) chart.destroy();
+        chart = new Chart($("#myChart"), {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Air Quality",
+                    data: values,
+                    borderColor: "blue",
+                    borderWidth: 2,
+                    fill: false
+                }]
+            }
+        });
+    }
+
+    function updateMap(dataPoints) {
+        markers.forEach(m => map.removeLayer(m));
+        markers = [];
+
+        dataPoints.forEach(p => {
+            const marker = L.marker([p.lat, p.lon]).addTo(map)
+                .bindPopup(`<b>AQ:</b> ${p.air_quality}<br><b>Time:</b> ${p.timestamp}`);
+            markers.push(marker);
+        });
+
+        // Jump to last reading
+        if (dataPoints.length > 0) {
+            let last = dataPoints[dataPoints.length - 1];
+            map.setView([last.lat, last.lon], 14);
+        }
+    }
+</script>
