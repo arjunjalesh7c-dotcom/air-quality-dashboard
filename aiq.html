@@ -93,10 +93,11 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+let map;
+let markers = [];
+let chart;
+let pathLine = null;   // <-- FIXED (required)
 
-        let map;
-        let markers = [];
-        let chart;
 
 var blueIcon = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
@@ -221,6 +222,7 @@ var redIcon = new L.Icon({
 
 </body>
 </html>
+
 
 
 
