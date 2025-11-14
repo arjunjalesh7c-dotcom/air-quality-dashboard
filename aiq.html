@@ -166,12 +166,19 @@ var redIcon = new L.Icon({
         }
 
         // ✅ Update Map Markers
-        function updateMap(dataPoints) {
+   function updateMap(dataPoints) {
+    // Remove old markers
     markers.forEach(m => map.removeLayer(m));
     markers = [];
 
-    dataPoints.forEach(p => {
+    // Remove old path
+    if (pathLine) map.removeLayer(pathLine);
 
+    const latlngs = [];
+
+    dataPoints.forEach((p, index) => {
+
+        // --- Color Logic ---
         let icon = blueIcon;
         if (p.air_quality > 1200) icon = redIcon;
         else if (p.air_quality > 1000) icon = orangeIcon;
@@ -181,17 +188,39 @@ var redIcon = new L.Icon({
             .bindPopup(`<b>AQ:</b> ${p.air_quality}<br><b>Time:</b> ${p.timestamp}`);
 
         markers.push(marker);
+
+        latlngs.push([p.lat, p.lon]);
+
+        // --- Blinking latest marker ---
+        if (index === dataPoints.length - 1) {
+            const el = marker._icon;
+            el.classList.add("blink");
+        }
     });
 
+    // --- Draw Path Line ---
+    pathLine = L.polyline(latlngs, {
+        color: "blue",
+        weight: 3,
+        opacity: 0.6
+    }).addTo(map);
+
+    // --- Auto-Follow Latest Marker + Smooth Zoom ---
     if (markers.length > 0) {
-      map.setView(markers[markers.length - 1].getLatLng(), map.getMaxZoom());
+        const last = markers[markers.length - 1].getLatLng();
+        map.flyTo(last, map.getMaxZoom(), {
+            animate: true,
+            duration: 1.2   // smooth zoom time
+        });
     }
 }
+
 
     </script>
 
 </body>
 </html>
+
 
 
 
