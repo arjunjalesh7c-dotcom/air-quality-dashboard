@@ -133,22 +133,22 @@ var redIcon = new L.Icon({
 
             // ✅ Fetch Firebase data live
           // ✅ Fetch Firebase data live
-const dataRef = ref(db, 'airdata');
-onValue(dataRef, (snapshot) => {
-    const raw = snapshot.val();
-    if (!raw) return;
-
-    const dataPoints = Object.values(raw)
-        .filter(p => p.lat && p.lon)
-        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-    // Show ALL points on chart
-    updateChart(dataPoints);
-
-    // Show ONLY last 5 points on map
-    const lastPoints = dataPoints.slice(-5);
-    updateMap(lastPoints);
-});
+            const dataRef = ref(db, 'airdata');
+            onValue(dataRef, (snapshot) => {
+                const raw = snapshot.val();
+                if (!raw) return;
+            
+                const dataPoints = Object.values(raw)
+                    .filter(p => p.lat && p.lon)
+                    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            
+                // Show ALL points on chart
+                updateChart(dataPoints);
+            
+                // Show ONLY last 5 points on map
+                const lastPoints = dataPoints.slice(-5);
+                updateMap(lastPoints);
+            });
 
         });
 
@@ -226,6 +226,7 @@ onValue(dataRef, (snapshot) => {
 
 </body>
 </html>
+
 
 
 
