@@ -132,16 +132,24 @@ var redIcon = new L.Icon({
             }).addTo(map);
 
             // ✅ Fetch Firebase data live
-            const dataRef = ref(db, 'airdata');
-            onValue(dataRef, (snapshot) => {
-                const raw = snapshot.val();
-                if (!raw) return;
+          // ✅ Fetch Firebase data live
+const dataRef = ref(db, 'airdata');
+onValue(dataRef, (snapshot) => {
+    const raw = snapshot.val();
+    if (!raw) return;
 
-                const dataPoints = Object.values(raw).filter(p => p.lat && p.lon);
+    const dataPoints = Object.values(raw)
+        .filter(p => p.lat && p.lon)
+        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-                updateChart(dataPoints);
-                updateMap(dataPoints);
-            });
+    // Show ALL points on chart
+    updateChart(dataPoints);
+
+    // Show ONLY last 5 points on map
+    const lastPoints = dataPoints.slice(-5);
+    updateMap(lastPoints);
+});
+
         });
 
         // ✅ Update Chart
@@ -218,6 +226,7 @@ var redIcon = new L.Icon({
 
 </body>
 </html>
+
 
 
 
