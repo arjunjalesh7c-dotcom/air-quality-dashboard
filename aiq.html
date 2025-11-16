@@ -189,9 +189,9 @@ var redIcon = new L.Icon({
 
         // --- Color Logic ---
         let icon = blueIcon;
-        if (p.air_quality > 1200) icon = redIcon;
-        else if (p.air_quality > 1000) icon = orangeIcon;
-        else if (p.air_quality > 900) icon = yellowIcon;
+        if (p.air_quality > 650) icon = redIcon;
+        else if (p.air_quality > 500) icon = orangeIcon;
+        else if (p.air_quality > 400) icon = yellowIcon;
 
         const marker = L.marker([p.lat, p.lon], { icon: icon }).addTo(map)
             .bindPopup(`<b>AQ:</b> ${p.air_quality}<br><b>Time:</b> ${p.timestamp}`);
@@ -226,6 +226,7 @@ var redIcon = new L.Icon({
 
 </body>
 </html>
+
 
 
 
